@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import * as clientController from '../controllers/clientController.mjs';
+import * as clientController from '../controllers/clientcontroller.mjs';
 import db from '../models/index.mjs';
 
 // Middleware to validate client token (implement your own logic)

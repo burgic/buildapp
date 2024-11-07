@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import * as adminController from '../controllers/adminController.mjs';
+import * as adminController from '../controllers/admincontroller.mjs';
 import passport from 'passport';
 
 // Middleware to protect routes
