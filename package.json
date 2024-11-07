@@ -2,7 +2,7 @@
     "name": "your-app-name",
     "version": "1.0.0",
     "description": "",
-    "main": "backend/server.js",
+    "main": "backend/server.mjs",
     "scripts": {
       "start": "node backend/server.js",
       "install": "cd backend && npm install"
@@ -11,3 +11,4 @@
       "node": ">=14"
     }
   }
+  
