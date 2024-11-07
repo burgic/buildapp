@@ -7,15 +7,17 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const sequelize = new Sequelize(
-  process.env.DATABASE_NAME,
-  process.env.DATABASE_USER,
-  process.env.DATABASE_PASSWORD,
-  {
-    host: process.env.DATABASE_HOST,
-    dialect: 'postgres', // Change this to 'postgres'
-    port: process.env.DATABASE_PORT || 5432, // PostgreSQL default port is 5432
-  }
-);
+    process.env.DATABASE_URL || 'postgres://localhost:5432/your_database_name',
+    {
+      dialect: 'postgres',
+      dialectOptions: {
+        ssl: process.env.NODE_ENV === 'production' ? {
+          require: true,
+          rejectUnauthorized: false
+        } : false
+      }
+    }
+  );
 
 // db
 const db = {};
