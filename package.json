@@ -1,0 +1,13 @@
+{
+    "name": "your-app-name",
+    "version": "1.0.0",
+    "description": "",
+    "main": "backend/server.js",
+    "scripts": {
+      "start": "cd backend && node server.js",
+      "install": "cd backend && npm install"
+    },
+    "engines": {
+      "node": ">=14"
+    }
+  }
