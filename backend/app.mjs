@@ -15,10 +15,16 @@ dotenv.config();
 
 
 // Middleware setup
-app.use(cors());
+app.use(cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    credentials: true, // Important for cookies/authentication
+    maxAge: 3600 // Cache preflight requests for 1 hour
+  }));
+  
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
 
 // Session setup for Passport.js
 app.use(
