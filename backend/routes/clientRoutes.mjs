@@ -24,6 +24,20 @@ const validateClientToken = async (req, res, next) => {
   }
 };
 
+// Endpoint to save personal details
+router.post('/personal-details', async (req, res) => {
+  try {
+    const { title, firstName, lastName, dateOfBirth, gender, ...otherFields } = req.body;
+    // Save the data into the database (you may use Sequelize, Mongoose, etc.)
+    // Example:
+    // const newDetails = await db.PersonalDetails.create(req.body);
+    res.status(201).json({ message: 'Personal details saved successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while saving personal details' });
+  }
+});
+
+
 // Get workflow steps/data
 router.get('/workflow', validateClientToken, clientController.getWorkflow);
 
