@@ -8,10 +8,15 @@ import IncomeDetails from './pages/IncomeDetails';
 import AppRoutes from './routes/AppRoutes'
 import FormProvider from './context/FormContext'; 
 import NotFound from './pages/NotFound';
+import ConnectionTest from './components/ConnectionTest';
 
 function App() {
   return (
+    
     <Router>
+      <div className='App'>
+      <ConnectionTest />
+    </div>
       <div className="app">
         <Sidebar />
         <div className="content">
