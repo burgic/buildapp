@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { FormContext } from '../context/FormProvider';
+import { FormContext } from '../context/FormContext';
 
 const EmploymentDetails = () => {
   const { formData, setFormData } = useContext(FormContext);
@@ -12,3 +12,5 @@ const EmploymentDetails = () => {
     </div>
   );
 };
+
+export default EmploymentDetails

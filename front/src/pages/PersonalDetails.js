@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { FormContext } from '../context/FormContext';
-import { savePersonalDetails } from '../services/formService';
+import React, { useState, useEffect, useContext } from 'react';
+import { FormContext } from '../context/FormContext.js';
+import { savePersonalDetails, getClientDetails } from '../services/formService';
 
 
 const PersonalDetails = () => {
 
-    const {formData: contextFromData, updateFormData} = useContext(FormContext);
-    const [formData, setFormData] = useState({
+    const {formData, updateFormData} = useContext(FormContext);
+    const [localFormData, setFormData] = useState(formData.personalDetails ||{
         title: '',
         firstName: '',
         middleName: '',
@@ -19,12 +19,28 @@ const PersonalDetails = () => {
         mobile: '',
     });
 
-      // Sync local state with context whenever the component is mounted or context data changes
+    // Synchronize local state with context when the component mounts
     useEffect(() => {
-        if (contextFormData.personalDetails) {
-        setFormData(contextFormData.personalDetails);
+        // Only set state if context has data to avoid overwriting with empty data
+        if (formData.personalDetails) {
+            setFormData(formData.personalDetails);
+        } else {
+        // Optionally, fetch saved data from the backend if context is empty
+        const fetchData = async () => {
+            try {
+            const data = await getClientDetails(); // Fetch data from the backend
+            if (data.personalDetails) {
+                setFormData(data.personalDetails);
+                updateFormData('personalDetails', data.personalDetails);
+            }
+            } catch (error) {
+            console.error('Error fetching client details:', error);
+            }
+        };
+
+        fetchData();
         }
-    }, [contextFormData.personalDetails]);
+    }, [formData.personalDetails, updateFormData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,30 +53,16 @@ const PersonalDetails = () => {
   const handleSubmit = async () => {
     try {
       // Save to context first
-      updateFormData('personalDetails', personalDetails);
+      updateFormData('personalDetails', localFormData);
 
       // Save to backend using Axios
-      const response = await savePersonalDetails(personalDetails);
+      const response = await savePersonalDetails(localFormData);
       console.log('Personal details saved successfully:', response);
     } catch (error) {
       console.error('Error saving personal details:', error);
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getClientDetails();
-        setPersonalDetails(data.personalDetails);
-        updateFormData('personalDetails', data.personalDetails);
-      } catch (error) {
-        console.error('Error fetching personal details:', error);
-      }
-    };
-    
-    fetchData();
-  }, []);
-  
 
   return (
     <div className="personal-details">

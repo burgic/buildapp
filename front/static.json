@@ -1,0 +1,9 @@
+{
+    "root": "build/",
+    "headers": {
+      "/**": {
+        "Access-Control-Allow-Origin": "*"
+      }
+    }
+  }
+  
