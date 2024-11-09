@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { FormContext } from '../context/FormContext.js';
 import { savePersonalDetails, getClientDetails } from '../services/formService';
-
+import { api } from '../services/apiClient';
 
 const PersonalDetails = () => {
 
@@ -51,17 +51,19 @@ const PersonalDetails = () => {
   };
 
   const handleSubmit = async () => {
+    e.preventDefault();
     try {
+        await api.savePersonalDetails(localFormData);
       // Save to context first
-      updateFormData('personalDetails', localFormData);
+        updateFormData('personalDetails', localFormData);
 
-      // Save to backend using Axios
-      const response = await savePersonalDetails(localFormData);
-      console.log('Personal details saved successfully:', response);
-    } catch (error) {
-      console.error('Error saving personal details:', error);
-    }
-  };
+        // Save to backend using Axios
+        const response = await savePersonalDetails(localFormData);
+        console.log('Personal details saved successfully:', response);
+        } catch (error) {
+        console.error('Error saving personal details:', error);
+        }
+    };
 
 
   return (

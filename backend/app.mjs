@@ -1,5 +1,4 @@
 import express from 'express';
-const app = express();
 import session from 'express-session';
 import passport from './auth/passport.mjs';
 import clientRoutes from './routes/clientRoutes.mjs'
@@ -10,47 +9,72 @@ import dotenv from 'dotenv';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const jwt = require('jsonwebtoken');
+import adminRoutes from './routes/adminRoutes.mjs';
 
 dotenv.config();
 
+const app = express();
 
-// Middleware setup
-app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+const corsOptions = {
+    origin: 'https://frontend1-e691af4ef904.herokuapp.com' || 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-    credentials: true, // Important for cookies/authentication
-    maxAge: 3600 // Cache preflight requests for 1 hour
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    maxAge: 86400, // 24 hours
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+  };
+  
+app.use(cors(corsOptions));
+
+  // Body parser configuration
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+
+
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-session-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    }
   }));
   
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Session setup for Passport.js
-app.use(
-  session({
-    secret: 'your_session_secret',
-    resave: false,
-    saveUninitialized: true,
-  })
-);
 
 // Initialize Passport.js
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Routes
-import adminRoutes from './routes/adminRoutes.mjs';
+// Root route for API health check
+app.get('/', (req, res) => {
+    res.json({ status: 'API is running' });
+  });
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'healthy' });
+  });
 
-app.use('/admin', adminRoutes);
-app.use('/client', clientRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/client', clientRoutes);
 
 // OAuth Routes
 app.get(
   '/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
+
+// Catch-all route for undefined routes
+app.use('*', (req, res) => {
+    res.status(404).json({ 
+      error: 'Not Found',
+      message: `Route ${req.originalUrl} not found`
+    });
+});
 
 app.get(
   '/auth/google/callback',
@@ -66,5 +90,12 @@ app.get(
 app.get('/auth/failure', (req, res) => {
   res.send('Authentication failed');
 });
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 500).json({
+      error: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message
+    });
+  });
 
 export default app;
