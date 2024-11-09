@@ -1,4 +1,3 @@
-// src/components/ConnectionTest.js
 import React, { useState, useEffect } from 'react';
 import API from '../services/api';
 
@@ -9,15 +8,17 @@ const ConnectionTest = () => {
   useEffect(() => {
     const testConnection = async () => {
       try {
-        // First, let's check if our API URL is correctly set
-        console.log('API URL:', process.env.REACT_APP_API_URL);
+        console.log('Attempting to connect to:', process.env.REACT_APP_API_URL);
         
-        // Try to connect to the backend
         const response = await API.get('/admin/dashboard');
         console.log('Response:', response);
         setStatus('Connection successful! Backend is responding.');
       } catch (err) {
-        console.error('Connection error:', err);
+        console.error('Connection error details:', {
+          message: err.message,
+          response: err.response,
+          config: err.config
+        });
         setError(err.message);
         setStatus('Connection failed - check console for details');
       }
