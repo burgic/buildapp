@@ -2,13 +2,13 @@ import express from 'express';
 import session from 'express-session';
 import passport from './auth/passport.mjs';
 import clientRoutes from './routes/clientRoutes.mjs';
-import './auth/jwt.mjs';
+import { authenticateJWT } from './auth/jwt.mjs';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { createRequire } from 'module';
 import adminRoutes from './routes/adminRoutes.mjs';
-import authRoutes from './routes/authRoutes.mjs';  // Add this import
+import authRoutes from './routes/authRoutes.mjs';  
 
 const require = createRequire(import.meta.url);
 const jwt = require('jsonwebtoken');
