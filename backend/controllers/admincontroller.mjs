@@ -16,6 +16,20 @@ export const dashboard = async (req, res) => {
       } : null
     };
 
+    try {
+        // Example: Fetch some data, like user count or activity logs
+        const userCount = await db.User.count();
+        const recentActivities = await db.Activity.findAll({
+          limit: 5,
+          order: [['createdAt', 'DESC']]
+        });
+    
+        return {
+          message: 'Admin dashboard data',
+          userCount,
+          recentActivities
+        };
+
     res.json(dashboardData);
   } catch (error) {
     console.error('Dashboard Error:', error);
