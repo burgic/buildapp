@@ -39,7 +39,7 @@ export const dashboard = async (req, res) => {
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
-};
+
 
 // Invite client controller
 export const inviteClient = async (req, res) => {
