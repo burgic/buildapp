@@ -3,6 +3,7 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import PersonalDetails from './pages/PersonalDetails';
+import Dashboard from './pages/Dashboard';
 import EmploymentDetails from './pages/EmploymentDetails';
 import IncomeDetails from './pages/IncomeDetails';
 import AppRoutes from './routes/AppRoutes'
@@ -21,6 +22,7 @@ function App() {
         <Sidebar />
         <div className="content">
           <Routes>
+            <Route path="/Dashboard" component={Dashboard}/>
             <Route path="/personal-details" component={PersonalDetails} />
             <Route path="/employment-details" component={EmploymentDetails} />
             <Route path="/incomes" component={IncomeDetails} />

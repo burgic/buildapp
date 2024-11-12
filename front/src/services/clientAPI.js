@@ -4,11 +4,21 @@ import axios from 'axios';
 // Determine the base URL based on environment
 const getBaseUrl = () => {
   if (process.env.NODE_ENV === 'production') {
-    return 'https://test-app-1042-deb2a2c51c8e.herokuapp.com/api';
+    return 'https://test-app-1042.herokuapp.com/api';
   }
   return 'http://localhost:5000/api';
   
 };
+
+export const fetchDashboardData = async () => {
+    const token = localStorage.getItem('jwtToken');
+    const response = await axios.get('https://test-app-1042-deb2a2c51c8e.herokuapp.com/api/admin/dashboard', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  };
 
 // Create a custom instance of axios
 const apiClient = axios.create({
@@ -31,13 +41,13 @@ const debugLog = (message, data) => {
 apiClient.interceptors.request.use(
   (config) => {
     debugLog('Request Config', config);
-    
+
     const token = localStorage.getItem('token');
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
+/*
     // Log request in development
     if (process.env.NODE_ENV === 'development') {
       console.log('API Request:', {
@@ -46,6 +56,13 @@ apiClient.interceptors.request.use(
         headers: config.headers
       });
     }
+*/
+    if (config.method === 'get') {
+        config.params = {
+          ...config.params,
+          _t: new Date().getTime()
+        };
+      }
     
     return config;
   },
@@ -59,14 +76,23 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => {
     // Log response in development
-    if (process.env.NODE_ENV === 'development') {
+    /* if (process.env.NODE_ENV === 'development') {
       console.log('API Response:', {
         url: response.config.url,
         status: response.status,
         data: response.data
       });
     }
+
     return response;
+    */
+
+
+    debugLog('Response', response);
+    return response;
+  },
+  async (error) => {
+    debugLog('Error Response', error);
   },
   async (error) => {
     if (error.response) {
@@ -75,6 +101,10 @@ apiClient.interceptors.response.use(
           // Handle unauthorized
           localStorage.removeItem('token');
           window.location.href = '/login';
+          break;
+        case 403:
+        // Handle forbidden
+        console.error('Access forbidden');
           break;
         case 404:
           console.error('API endpoint not found:', error.config.url);
@@ -96,6 +126,20 @@ apiClient.interceptors.response.use(
 
 // API endpoints
 export const api = {
+
+  //  authenticate: (credentials) => apiClient.post('/auth/login', credentials),
+  // endSession: () => apiClient.post('/auth/logout'),
+
+  login: (credentials) => apiClient.post('/api/auth/login', credentials),
+  logout: () => apiClient.post('/api/auth/logout'),
+  
+  // Dashboard - renamed from admin
+  getDashboardData: () => apiClient.get('/management/dashboard', {
+    headers: {
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache'
+    }
+  }),
   // Auth endpoints
   googleAuth: () => `${getBaseUrl()}/auth/google`, // Returns full URL for Google OAuth redirect
   
