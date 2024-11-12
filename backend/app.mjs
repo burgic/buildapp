@@ -18,7 +18,12 @@ const app = express();
 const corsOptions = {
     origin: 'https://frontend1-e691af4ef904.herokuapp.com' || 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: [
+    'Content-Type', 
+    'Authorization'. 
+    'X-Requested-With', 
+    'Accept', 
+    'Origin'],
     credentials: true,
     maxAge: 86400, // 24 hours
     preflightContinue: false,
@@ -70,6 +75,7 @@ app.get(
 
 // Catch-all route for undefined routes
 app.use('*', (req, res) => {
+    console.error(err.stack);
     res.status(404).json({ 
       error: 'Not Found',
       message: `Route ${req.originalUrl} not found`
