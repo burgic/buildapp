@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { FormContext } from '../context/FormContext.js';
 import { savePersonalDetails, getClientDetails } from '../services/formService';
-import { api } from '../services/apiClient';
+import { api } from '../services/clientAPI.js';
 
 const PersonalDetails = () => {
 
