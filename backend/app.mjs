@@ -16,11 +16,11 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-    origin: 'https://frontend1-e691af4ef904.herokuapp.com' || 'http://localhost:3000',
+    origin: ['https://frontend1-e691af4ef904.herokuapp.com', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
     'Content-Type', 
-    'Authorization'. 
+    'Authorization',
     'X-Requested-With', 
     'Accept', 
     'Origin'],
@@ -67,6 +67,11 @@ app.get('/api/health', (req, res) => {
 app.use('/api/admin', adminRoutes);
 app.use('/api/client', clientRoutes);
 
+// Basic health check
+app.get('/health', (req, res) => {
+    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+  });
+
 // OAuth Routes
 app.get(
   '/auth/google',
@@ -93,9 +98,23 @@ app.get(
   }
 );
 
+app.get('/favicon.ico', (req, res) => res.status(204));
+
+
 app.get('/auth/failure', (req, res) => {
   res.send('Authentication failed');
 });
+
+// Error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 500).json({
+      status: 'error',
+      message: process.env.NODE_ENV === 'production' 
+        ? 'Internal server error' 
+        : err.message
+    });
+  });
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
